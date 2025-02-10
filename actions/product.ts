@@ -103,8 +103,6 @@ export const createProductAction = async (formData: FormData) => {
       "An unexpected error occurred",
     );
   }
-
-  return redirect("/dashboard/products");
 };
 
 export const updateProductAction = async ({
@@ -222,7 +220,6 @@ export const updateProductAction = async ({
       "An unexpected error occurred",
     );
   }
-  return redirect("/dashboard/products");
 };
 
 export const createCategoryAction = async (formData: FormData) => {
@@ -291,12 +288,6 @@ export const deleteProductAction = async (formData: FormData) => {
         "Failed to delete product",
       );
     }
-
-    return encodedRedirect(
-      "success",
-      "/dashboard/products",
-      "Product deleted successfully",
-    );
   } catch (error) {
     return encodedRedirect(
       "error",

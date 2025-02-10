@@ -33,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type Product = {
   id: string;
@@ -56,6 +57,7 @@ export function ProductTable() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const supabase = createClient();
+  const queryClient = useQueryClient();
 
   const { data: products, isLoading } = useQuery(
     supabase
@@ -74,6 +76,9 @@ export function ProductTable() {
     } catch (error) {
       console.error("Failed to delete product:", error);
     } finally {
+      queryClient.invalidateQueries({
+        queryKey: ["postgrest", "null", "public", "products"],
+      });
       setIsDeleting(false);
     }
   };

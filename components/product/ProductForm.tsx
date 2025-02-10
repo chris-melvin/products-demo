@@ -17,6 +17,7 @@ import {
 import { CategorySelect } from "./CategorySelect";
 import { useRouter } from "next/navigation";
 import { createProductAction, updateProductAction } from "@/actions/product";
+import { useQueryClient } from "@tanstack/react-query";
 
 const productSchema = z.object({
   id: z.string().uuid().optional(),
@@ -40,6 +41,7 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.imageUrl || null,
   );
+  const queryClient = useQueryClient();
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData || {
@@ -75,12 +77,14 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
       } else {
         await createProductAction(formData);
       }
-      router.refresh();
-      router.push("/products");
+      queryClient.invalidateQueries({
+        queryKey: ["postgrest", "null", "public", "products"],
+      });
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setLoading(false);
+      router.push("/dashboard/products");
     }
   };
 
@@ -137,7 +141,10 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
                 <Input
                   type="number"
                   {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? "" : parseFloat(value));
+                  }}
                 />
               </FormControl>
               <FormMessage />
