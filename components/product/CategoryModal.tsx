@@ -63,7 +63,9 @@ export function CategoryModal({ open, onOpenChange }: CategoryModalProps) {
       }
 
       // Invalidate and refetch categories
-      //   await queryClient.invalidateQueries(["categories"]);
+      await queryClient.invalidateQueries({
+        queryKey: ["postgrest", "null", "public", "categories"],
+      });
 
       // Reset form and close modal
       form.reset();
@@ -83,7 +85,14 @@ export function CategoryModal({ open, onOpenChange }: CategoryModalProps) {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit(onSubmit)(e);
+            }}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"

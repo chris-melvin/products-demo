@@ -1,48 +1,28 @@
-// components/forms/CategorySelect.tsx
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { createClient } from "@/utils/supabase/client"
+import { useState } from "react";
+import { useQuery } from "@supabase-cache-helpers/postgrest-react-query";
+import { createClient } from "@/utils/supabase/client";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { CategoryModal } from "./CategoryModal"
-
-interface Category {
-  id: string
-  name: string
-  description: string | null
-}
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CategoryModal } from "./CategoryModal";
 
 interface CategorySelectProps {
-  value?: string
-  onChange: (value: string) => void
+  value?: string;
+  onChange: (value: string) => void;
 }
 
 export function CategorySelect({ value, onChange }: CategorySelectProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const supabase = createClient()
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const supabase = createClient();
 
-  const { data: categories, isLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name')
-      
-      if (error) throw error
-      return data as Category[]
-    }
-  })
-
-  if (isLoading) {
-    return <div>Loading categories...</div>
-  }
+  const { data: categories, isLoading } = useQuery(
+    supabase.from("categories").select("*").order("name"),
+  );
 
   return (
     <div className="space-y-2">
@@ -51,11 +31,17 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
           <SelectValue placeholder="Select a category" />
         </SelectTrigger>
         <SelectContent>
-          {categories?.map((category) => (
-            <SelectItem key={category.id} value={category.id}>
-              {category.name}
+          {isLoading ? (
+            <SelectItem value="loading" disabled>
+              Loading categories...
             </SelectItem>
-          ))}
+          ) : (
+            categories?.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))
+          )}
         </SelectContent>
       </Select>
 
@@ -67,10 +53,7 @@ export function CategorySelect({ value, onChange }: CategorySelectProps) {
         Create New Category
       </Button>
 
-      <CategoryModal 
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
+      <CategoryModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
-  )
+  );
 }
