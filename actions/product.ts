@@ -215,8 +215,6 @@ export const updateProductAction = async ({
         );
       }
     }
-
-    return redirect("/products");
   } catch (error) {
     return encodedRedirect(
       "error",
@@ -224,6 +222,7 @@ export const updateProductAction = async ({
       "An unexpected error occurred",
     );
   }
+  return redirect("/products");
 };
 
 export const createCategoryAction = async (formData: FormData) => {
@@ -268,7 +267,7 @@ export const deleteProductAction = async (formData: FormData) => {
 
     // Get product images
     const { data: images } = await supabase
-      .from("product_images")
+      .from(STORAGE_BUCKET)
       .select("storage_path")
       .eq("product_id", id);
 

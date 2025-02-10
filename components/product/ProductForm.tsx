@@ -30,15 +30,16 @@ const productSchema = z.object({
 type ProductFormValues = z.infer<typeof productSchema>;
 
 interface ProductFormProps {
-  initialData?: ProductFormValues;
+  initialData?: ProductFormValues & { imageUrl?: string };
   mode: "create" | "edit";
 }
 
 export function ProductForm({ initialData, mode }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    initialData?.imageUrl || null,
+  );
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData || {
@@ -165,22 +166,38 @@ export function ProductForm({ initialData, mode }: ProductFormProps) {
             <FormItem>
               <FormLabel>Product Image</FormLabel>
               <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  {...field}
-                />
-              </FormControl>
-              {imagePreview && (
-                <div className="mt-2">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-xs rounded-md"
+                <div className="space-y-4">
+                  {/* Show existing or preview image */}
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Product preview"
+                        className="max-w-xs rounded-md"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="mt-2"
+                        onClick={() => {
+                          setImagePreview(null);
+                          form.setValue("image", undefined);
+                        }}
+                      >
+                        Remove Image
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* File input */}
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    {...field}
                   />
                 </div>
-              )}
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
