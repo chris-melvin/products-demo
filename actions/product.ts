@@ -19,7 +19,7 @@ export const createProductAction = async (formData: FormData) => {
     if (!name || !description || isNaN(base_price)) {
       return encodedRedirect(
         "error",
-        "/products/create",
+        "/dashboard/products/create",
         "All required fields must be provided",
       );
     }
@@ -44,7 +44,7 @@ export const createProductAction = async (formData: FormData) => {
       if (uploadError) {
         return encodedRedirect(
           "error",
-          "/products/create",
+          "/dashboard/products/create",
           "Failed to upload image",
         );
       }
@@ -71,7 +71,7 @@ export const createProductAction = async (formData: FormData) => {
       }
       return encodedRedirect(
         "error",
-        "/products/create",
+        "/dashboard/products/create",
         "Failed to create product",
       );
     }
@@ -91,7 +91,7 @@ export const createProductAction = async (formData: FormData) => {
         await supabase.storage.from(STORAGE_BUCKET).remove([storage_path]);
         return encodedRedirect(
           "error",
-          "/products/create",
+          "/dashboard/products/create",
           "Failed to save image reference",
         );
       }
@@ -99,12 +99,12 @@ export const createProductAction = async (formData: FormData) => {
   } catch (error) {
     return encodedRedirect(
       "error",
-      "/products/create",
+      "/dashboard/products/create",
       "An unexpected error occurred",
     );
   }
 
-  return redirect("/products");
+  return redirect("/dashboard/products");
 };
 
 export const updateProductAction = async ({
@@ -125,7 +125,7 @@ export const updateProductAction = async ({
     if (!id || !name || !description || isNaN(base_price)) {
       return encodedRedirect(
         "error",
-        `/products/edit/${id}`,
+        `/dashboard/products/edit/${id}`,
         "All required fields must be provided",
       );
     }
@@ -165,7 +165,7 @@ export const updateProductAction = async ({
       if (uploadError) {
         return encodedRedirect(
           "error",
-          `/products/edit/${id}`,
+          `/dashboard/products/edit/${id}`,
           "Failed to upload new image",
         );
       }
@@ -187,7 +187,7 @@ export const updateProductAction = async ({
     if (productError) {
       return encodedRedirect(
         "error",
-        `/products/edit/${id}`,
+        `/dashboard/products/edit/${id}`,
         "Failed to update product",
       );
     }
@@ -210,7 +210,7 @@ export const updateProductAction = async ({
       if (imageError) {
         return encodedRedirect(
           "error",
-          `/products/edit/${id}`,
+          `"/dashboard/products/edit/${id}`,
           "Failed to update image reference",
         );
       }
@@ -218,11 +218,11 @@ export const updateProductAction = async ({
   } catch (error) {
     return encodedRedirect(
       "error",
-      `/products/edit/${id}`,
+      `/dashboard/products/edit/${id}`,
       "An unexpected error occurred",
     );
   }
-  return redirect("/products");
+  return redirect("/dashboard/products");
 };
 
 export const createCategoryAction = async (formData: FormData) => {
@@ -262,7 +262,11 @@ export const deleteProductAction = async (formData: FormData) => {
     const id = formData.get("id") as string;
 
     if (!id) {
-      return encodedRedirect("error", "/products", "Product ID is required");
+      return encodedRedirect(
+        "error",
+        "/dashboard/products",
+        "Product ID is required",
+      );
     }
 
     // Get product images
@@ -281,18 +285,22 @@ export const deleteProductAction = async (formData: FormData) => {
     const { error } = await supabase.from("products").delete().eq("id", id);
 
     if (error) {
-      return encodedRedirect("error", "/products", "Failed to delete product");
+      return encodedRedirect(
+        "error",
+        "/dashboard/products",
+        "Failed to delete product",
+      );
     }
 
     return encodedRedirect(
       "success",
-      "/products",
+      "/dashboard/products",
       "Product deleted successfully",
     );
   } catch (error) {
     return encodedRedirect(
       "error",
-      "/products",
+      "/dashboard/products",
       "An unexpected error occurred",
     );
   }
