@@ -45,6 +45,10 @@ export type Product = {
   category?: {
     name: string;
   };
+  product_images?: {
+    storage_path: string;
+    is_primary: boolean;
+  }[];
 };
 
 export function ProductTable() {
